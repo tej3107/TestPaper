@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 public class SampleResource {
+	// Remove this class
 
 	@GetMapping("/sample")
 	public String getSample() {
