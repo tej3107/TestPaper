@@ -5,6 +5,7 @@ import com.testpaper.demo.model.Question;
 import com.testpaper.demo.model.Option;
 import com.testpaper.demo.repository.QuestionRepository;
 import com.testpaper.demo.repository.OptionRepository;
+import com.testpaper.demo.repository.TagQuestionRepository;
 import com.testpaper.demo.util.IdGenerator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +22,12 @@ public class QuestionResource {
 
 	private final QuestionRepository questionRepository;
 	private final OptionRepository optionRepository;
+	private final TagQuestionRepository tagQuestionRepository;
 
-	public QuestionResource(QuestionRepository questionRepository, OptionRepository optionRepository) {
+	public QuestionResource(QuestionRepository questionRepository, OptionRepository optionRepository, TagQuestionRepository tagQuestionRepository) {
 		this.questionRepository = questionRepository;
 		this.optionRepository = optionRepository;
+		this.tagQuestionRepository = tagQuestionRepository;
 	}
 
 	@PostMapping
@@ -45,6 +48,7 @@ public class QuestionResource {
 			question.getStem(),
 			question.getMultiCorrect(),
 			new ArrayList<>() // Empty options list for new question
+			, new ArrayList<>() // Empty tags list for new question
 		);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -204,6 +208,15 @@ public class QuestionResource {
 			question.getMultiCorrect(),
 			optionResponses
 		);
+
+		List<TagResponse> tagResponses = tagQuestionRepository.findByQuestionId(questionId).stream()
+				.map(tagQuestion -> new TagResponse(
+					tagQuestion.getTag().getId(),
+					tagQuestion.getTag().getName(),
+					tagQuestion.getTag().getDescription()))
+				.collect(Collectors.toList());
+
+		response.setTags(tagResponses);
 		
 		return ResponseEntity.ok(response);
 	}

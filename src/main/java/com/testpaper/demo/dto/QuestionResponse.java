@@ -8,10 +8,18 @@ public class QuestionResponse {
 	private String stem;
 	private Boolean multiCorrect;
 	private List<OptionResponse> options;
+	private List<TagResponse> tags;
 	
 	public QuestionResponse() {
 	}
 	
+	public QuestionResponse(String id, String stem, Boolean multiCorrect, List<OptionResponse> options, List<TagResponse> tags) {
+		this.id = id;
+		this.stem = stem;
+		this.multiCorrect = multiCorrect;
+		this.options = options;
+		this.tags = tags;
+	}
 	public QuestionResponse(String id, String stem, Boolean multiCorrect, List<OptionResponse> options) {
 		this.id = id;
 		this.stem = stem;
@@ -49,6 +57,14 @@ public class QuestionResponse {
 	
 	public void setOptions(List<OptionResponse> options) {
 		this.options = options;
+	}
+
+	public List<TagResponse> getTags() {
+		return tags;
+	}
+
+	public void setTags(List<TagResponse> tags) {
+		this.tags = tags;
 	}
 }
 

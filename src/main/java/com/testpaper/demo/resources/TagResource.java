@@ -45,8 +45,7 @@ public class TagResource {
 		TagResponse response = new TagResponse(
 			tag.getId(),
 			tag.getName(),
-			tag.getDescription(),
-			tag.getCreatedAt()
+			tag.getDescription()
 		);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
