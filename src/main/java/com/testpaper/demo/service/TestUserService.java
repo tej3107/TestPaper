@@ -4,15 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.testpaper.demo.dto.QuestionAnswer;
 import com.testpaper.demo.dto.TestUserAnswerRequest;
-import com.testpaper.demo.model.Option;
-import com.testpaper.demo.model.Question;
-import com.testpaper.demo.model.QuestionPaper;
-import com.testpaper.demo.model.TestUserResponse;
-import com.testpaper.demo.model.TestUserResponseId;
-import com.testpaper.demo.repository.OptionRepository;
-import com.testpaper.demo.repository.QuestionPaperRepository;
-import com.testpaper.demo.repository.QuestionRepository;
-import com.testpaper.demo.repository.TestUserResponseRepository;
+import com.testpaper.demo.model.*;
+import com.testpaper.demo.repository.*;
 import com.testpaper.demo.util.IdGenerator;
 import org.springframework.stereotype.Service;
 
@@ -30,17 +23,20 @@ public class TestUserService {
     private final QuestionPaperRepository questionPaperRepository;
     private final QuestionRepository questionRepository;
     private final OptionRepository optionRepository;
+    private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
 
     public TestUserService(TestUserResponseRepository testUserResponseRepository,
                            QuestionPaperRepository questionPaperRepository,
                            QuestionRepository questionRepository,
                            OptionRepository optionRepository,
+                           UserRepository userRepository,
                            ObjectMapper objectMapper) {
         this.testUserResponseRepository = testUserResponseRepository;
         this.questionPaperRepository = questionPaperRepository;
         this.questionRepository = questionRepository;
         this.optionRepository = optionRepository;
+        this.userRepository = userRepository;
         this.objectMapper = objectMapper;
     }
 
@@ -53,6 +49,11 @@ public class TestUserService {
         }
         if (request.getAnswers() == null || request.getAnswers().isEmpty()) {
             throw new RuntimeException("Answers list cannot be empty");
+        }
+
+        Optional<User> userOpt = userRepository.findById(request.getUserId());
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException(String.format("User with ID '%s' not found", request.getUserId()));
         }
 
         // Validate Question Paper exists

@@ -25,7 +25,7 @@ public class TestUserResource {
         } catch (RuntimeException e) {
             if (e.getMessage().contains("cannot be empty") || e.getMessage().contains("not found") ||
                 e.getMessage().contains("not part of")) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); // Or a specific error DTO
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TestUserResponse(null, e.getMessage(), null, null)); // Or a specific error DTO
             } else {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Or a specific error DTO
             }
