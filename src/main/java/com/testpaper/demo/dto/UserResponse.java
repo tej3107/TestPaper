@@ -5,16 +5,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OptionResponse {
-	
-	private String optionId;
-	private String questionId;
-	private String optionText;
-	private Boolean isCorrect;
-
+public class UserResponse {
+    private String name;
+    private String username;
+    private String email;
+    private LocalDate dateOfBirth;
 }
-

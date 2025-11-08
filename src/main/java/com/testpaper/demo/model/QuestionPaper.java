@@ -1,10 +1,19 @@
 package com.testpaper.demo.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "question_papers")
 public class QuestionPaper {
@@ -23,9 +32,6 @@ public class QuestionPaper {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    public QuestionPaper() {
-    }
-
     public QuestionPaper(String id, String name, List<String> questionIds) {
         this.id = id;
         this.name = name;
@@ -33,35 +39,4 @@ public class QuestionPaper {
         this.createdAt = LocalDateTime.now();
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<String> getQuestionIds() {
-        return questionIds;
-    }
-
-    public void setQuestionIds(List<String> questionIds) {
-        this.questionIds = questionIds;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
 }

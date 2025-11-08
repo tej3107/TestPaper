@@ -9,12 +9,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OptionResponse {
-	
-	private String optionId;
-	private String questionId;
-	private String optionText;
-	private Boolean isCorrect;
+public class QuestionPaperSummaryResponse {
+
+    private String id;
+    private String name;
+    private String tagName;
 
 }
-

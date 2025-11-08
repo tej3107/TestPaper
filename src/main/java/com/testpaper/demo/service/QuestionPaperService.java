@@ -4,6 +4,7 @@ import com.testpaper.demo.dto.QuestionPaperOptionResponse;
 import com.testpaper.demo.dto.QuestionPaperQuestionResponse;
 import com.testpaper.demo.dto.QuestionPaperRequest;
 import com.testpaper.demo.dto.QuestionPaperResponse;
+import com.testpaper.demo.dto.QuestionPaperSummaryResponse;
 import com.testpaper.demo.model.*;
 import com.testpaper.demo.repository.OptionRepository;
 import com.testpaper.demo.repository.QuestionPaperRepository;
@@ -11,6 +12,8 @@ import com.testpaper.demo.repository.QuestionRepository;
 import com.testpaper.demo.repository.TagQuestionRepository;
 import com.testpaper.demo.repository.TagRepository;
 import com.testpaper.demo.util.IdGenerator;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -85,7 +88,7 @@ public class QuestionPaperService {
                 List<QuestionPaperOptionResponse> questionPaperOptions = options.stream()
                         .map(opt -> new QuestionPaperOptionResponse(opt.getOptionId(), opt.getOptionText()))
                         .collect(Collectors.toList());
-                questionPaperQuestions.add(new QuestionPaperQuestionResponse(question.getId(), question.getStem(), questionPaperOptions));
+                questionPaperQuestions.add(new QuestionPaperQuestionResponse(question.getId(), question.getStem(), question.getMultiCorrect(), questionPaperOptions));
             }
         }
 
@@ -108,9 +111,41 @@ public class QuestionPaperService {
                 List<QuestionPaperOptionResponse> questionPaperOptions = options.stream()
                         .map(opt -> new QuestionPaperOptionResponse(opt.getOptionId(), opt.getOptionText()))
                         .collect(Collectors.toList());
-                questionPaperQuestions.add(new QuestionPaperQuestionResponse(question.getId(), question.getStem(), questionPaperOptions));
+                questionPaperQuestions.add(new QuestionPaperQuestionResponse(question.getId(), question.getStem(), question.getMultiCorrect(), questionPaperOptions));
             }
         }
         return new QuestionPaperResponse(questionPaper.getId(), questionPaper.getName(), questionPaperQuestions);
+    }
+
+    public List<QuestionPaperSummaryResponse> getQuestionPaperSummaries(Integer start, Integer count) {
+        List<QuestionPaper> questionPapers;
+        if (start == null || count == null || (start == 0 && count == 0)) {
+            Pageable pageable = PageRequest.of(0, 20);
+            questionPapers = questionPaperRepository.findAll(pageable).getContent();
+        } else {
+            Pageable pageable = PageRequest.of(start, count);
+            questionPapers = questionPaperRepository.findAll(pageable).getContent();
+        }
+
+        return questionPapers.stream()
+                .map(questionPaper -> {
+                    // To get the tag name, we need to find one of the questions in the paper and then its tag.
+                    // This is an approximation as a paper might theoretically have questions from multiple tags,
+                    // but based on createQuestionPaper, it's created from a single tag.
+                    String tagName = null;
+                    if (!questionPaper.getQuestionIds().isEmpty()) {
+                        String firstQuestionId = questionPaper.getQuestionIds().get(0);
+                        List<TagQuestion> tagQuestions = tagQuestionRepository.findByQuestionId(firstQuestionId);
+                        if (!tagQuestions.isEmpty()) {
+                            String tagId = tagQuestions.get(0).getTag().getId();
+                            Optional<Tag> tagOpt = tagRepository.findById(tagId);
+                            if (tagOpt.isPresent()) {
+                                tagName = tagOpt.get().getName();
+                            }
+                        }
+                    }
+                    return new QuestionPaperSummaryResponse(questionPaper.getId(), questionPaper.getName(), tagName);
+                })
+                .collect(Collectors.toList());
     }
 }

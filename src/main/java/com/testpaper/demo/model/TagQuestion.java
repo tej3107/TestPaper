@@ -1,7 +1,15 @@
 package com.testpaper.demo.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "tag_questions", uniqueConstraints = {
 	@UniqueConstraint(columnNames = {"tag_id", "question_id"})
@@ -25,9 +33,6 @@ public class TagQuestion {
 	@Column(name = "created_at")
 	private java.time.LocalDateTime createdAt;
 
-	public TagQuestion() {
-	}
-
 	public TagQuestion(Tag tag, String questionId) {
 		this.tag = tag;
 		this.questionId = questionId;
@@ -35,45 +40,5 @@ public class TagQuestion {
 		this.createdAt = java.time.LocalDateTime.now();
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Tag getTag() {
-		return tag;
-	}
-
-	public void setTag(Tag tag) {
-		this.tag = tag;
-		this.tagId = tag != null ? tag.getId() : null;
-	}
-
-	public String getTagId() {
-		return tagId;
-	}
-
-	public void setTagId(String tagId) {
-		this.tagId = tagId;
-	}
-
-	public String getQuestionId() {
-		return questionId;
-	}
-
-	public void setQuestionId(String questionId) {
-		this.questionId = questionId;
-	}
-
-	public java.time.LocalDateTime getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(java.time.LocalDateTime createdAt) {
-		this.createdAt = createdAt;
-	}
 }
 

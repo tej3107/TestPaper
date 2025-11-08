@@ -6,18 +6,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.ArrayList;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class QuestionResponse {
-	
-	private String id;
-	private String stem;
-	private Boolean multiCorrect;
-	private List<OptionResponse> options;
-	private List<TagResponse> tags;
+public class QuestionAnswer {
+
+    private String questionId;
+    private List<String> selectedOptionIds = new ArrayList<>();
 
 }
-

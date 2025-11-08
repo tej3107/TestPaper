@@ -2,10 +2,13 @@ package com.testpaper.demo.resources;
 
 import com.testpaper.demo.dto.QuestionPaperRequest;
 import com.testpaper.demo.dto.QuestionPaperResponse;
+import com.testpaper.demo.dto.QuestionPaperSummaryResponse;
 import com.testpaper.demo.service.QuestionPaperService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/questionpapers")
@@ -47,6 +50,18 @@ public class QuestionPaperResource {
             } else {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
+        }
+    }
+
+    @GetMapping("/summary")
+    public ResponseEntity<List<QuestionPaperSummaryResponse>> getQuestionPaperSummaries(
+            @RequestParam(value = "start", defaultValue = "0") Integer start,
+            @RequestParam(value = "count", defaultValue = "20") Integer count) {
+        try {
+            List<QuestionPaperSummaryResponse> summaries = questionPaperService.getQuestionPaperSummaries(start, count);
+            return ResponseEntity.ok(summaries);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Or a specific error DTO
         }
     }
 }

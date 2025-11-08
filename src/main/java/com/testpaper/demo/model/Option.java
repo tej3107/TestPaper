@@ -1,9 +1,17 @@
 package com.testpaper.demo.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "options")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Option {
 
 	@Id
@@ -28,52 +36,8 @@ public class Option {
 	@Column(name = "is_correct")
 	private Boolean isCorrect;
 
-	public Option() {
-	}
-
 	public Option(String optionText, Boolean isCorrect) {
 		this.optionText = optionText;
-		this.isCorrect = isCorrect;
-	}
-
-	public String getOptionId() {
-		return optionId;
-	}
-
-	public void setOptionId(String optionId) {
-		this.optionId = optionId;
-	}
-
-	public Question getQuestion() {
-		return question;
-	}
-
-	public void setQuestion(Question question) {
-		this.question = question;
-		this.questionId = question != null ? question.getId() : null;
-	}
-
-	public String getQuestionId() {
-		return questionId;
-	}
-
-	public void setQuestionId(String questionId) {
-		this.questionId = questionId;
-	}
-
-	public String getOptionText() {
-		return optionText;
-	}
-
-	public void setOptionText(String optionText) {
-		this.optionText = optionText;
-	}
-
-	public Boolean getIsCorrect() {
-		return isCorrect;
-	}
-
-	public void setIsCorrect(Boolean isCorrect) {
 		this.isCorrect = isCorrect;
 	}
 }
