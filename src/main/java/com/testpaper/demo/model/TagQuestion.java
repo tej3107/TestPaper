@@ -17,7 +17,7 @@ public class TagQuestion {
 	private Tag tag;
 
 	@Column(name = "tag_id", insertable = false, updatable = false)
-	private Long tagId;
+	private String tagId;
 
 	@Column(name = "question_id", nullable = false, length = 32)
 	private String questionId;
@@ -52,11 +52,11 @@ public class TagQuestion {
 		this.tagId = tag != null ? tag.getId() : null;
 	}
 
-	public Long getTagId() {
+	public String getTagId() {
 		return tagId;
 	}
 
-	public void setTagId(Long tagId) {
+	public void setTagId(String tagId) {
 		this.tagId = tagId;
 	}
 

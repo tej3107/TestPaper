@@ -4,24 +4,24 @@ import java.util.List;
 
 public class TagQuestionResponse {
 	
-	private Long tagId;
+	private String tagId;
 	private String tagName;
 	private List<String> questionIds;
 	
 	public TagQuestionResponse() {
 	}
 	
-	public TagQuestionResponse(Long tagId, String tagName, List<String> questionIds) {
+	public TagQuestionResponse(String tagId, String tagName, List<String> questionIds) {
 		this.tagId = tagId;
 		this.tagName = tagName;
 		this.questionIds = questionIds;
 	}
 	
-	public Long getTagId() {
+	public String getTagId() {
 		return tagId;
 	}
 	
-	public void setTagId(Long tagId) {
+	public void setTagId(String tagId) {
 		this.tagId = tagId;
 	}
 	

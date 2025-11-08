@@ -10,134 +10,122 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import com.testpaper.demo.service.TagService;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/tags")
 public class TagResource {
 
-	private final TagRepository tagRepository;
-	private final TagQuestionRepository tagQuestionRepository;
-	private final QuestionRepository questionRepository;
+	private final TagService tagService;
 
-	public TagResource(TagRepository tagRepository, TagQuestionRepository tagQuestionRepository, 
-			QuestionRepository questionRepository) {
-		this.tagRepository = tagRepository;
-		this.tagQuestionRepository = tagQuestionRepository;
-		this.questionRepository = questionRepository;
+	public TagResource(TagService tagService) {
+		this.tagService = tagService;
 	}
 
 	@PostMapping
-	public ResponseEntity<?> createTag(@RequestBody TagRequest request) {
-		// Check if tag with same name already exists
-		Optional<Tag> tagOptional = tagRepository.findByName(request.getName());
-		if (tagOptional.isPresent()) {
-			return ResponseEntity.status(HttpStatus.CONFLICT)
-				.body(String.format("Tag with name '%s' already exists with id: '%s'", request.getName(), tagOptional.get().getId()));
+	public ResponseEntity<TagResponse> createTag(@RequestBody TagRequest request) {
+		try {
+			TagResponse response = tagService.createTag(request);
+			return ResponseEntity.status(HttpStatus.CREATED).body(response);
+		} catch (RuntimeException e) {
+			if (e.getMessage().contains("Tag Already Exist")) {
+				return ResponseEntity.status(HttpStatus.CONFLICT).body(new TagResponse(null, e.getMessage(), null));
+			} else {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new TagResponse(null, e.getMessage(), null));
+			}
 		}
-		
-		Tag tag = new Tag(request.getName(), request.getDescription());
-		tag = tagRepository.save(tag);
-		
-		TagResponse response = new TagResponse(
-			tag.getId(),
-			tag.getName(),
-			tag.getDescription()
-		);
-		
-		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
-	@PostMapping("/{tagId}/questions")
-	public ResponseEntity<?> assignQuestionsToTag(
-			@PathVariable Long tagId,
-			@RequestBody List<String> questionIds) {
-		
-		// Verify tag exists
-		Optional<Tag> tagOpt = tagRepository.findById(tagId);
-		if (tagOpt.isEmpty()) {
-			return ResponseEntity.notFound().build();
-		}
-		
-		Tag tag = tagOpt.get();
-		
-		if (questionIds == null || questionIds.isEmpty()) {
-			return ResponseEntity.badRequest().body("Question IDs list cannot be empty");
-		}
-		
-		// Verify all question IDs exist
-		List<String> invalidQuestionIds = new ArrayList<>();
-		for (String questionId : questionIds) {
-			if (questionId == null || questionId.isEmpty()) {
-				invalidQuestionIds.add("(null or empty)");
-			} else if (!questionRepository.existsById(questionId)) {
-				invalidQuestionIds.add(questionId);
-			}
-		}
-		
-		if (!invalidQuestionIds.isEmpty()) {
-			return ResponseEntity.badRequest()
-				.body("Invalid question IDs: " + String.join(", ", invalidQuestionIds));
-		}
-		
-		// Create or update tag-question mappings
-		List<TagQuestion> tagQuestions = new ArrayList<>();
-		for (String questionId : questionIds) {
-			// Check if mapping already exists
-			Optional<TagQuestion> existing = tagQuestionRepository.findByTagIdAndQuestionId(tagId, questionId);
-			
-			TagQuestion tagQuestion;
-			if (existing.isPresent()) {
-				// Mapping already exists, skip
-				tagQuestion = existing.get();
+	@GetMapping("/{tagName}")
+	public ResponseEntity<TagResponse> getTagOnName(@PathVariable String tagName) {
+		try {
+			TagResponse response = tagService.getTagByName(tagName);
+			return ResponseEntity.ok(response);
+		} catch (RuntimeException e) {
+			if (e.getMessage().contains("Tag not found")) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 			} else {
-				// Create new mapping
-				tagQuestion = new TagQuestion(tag, questionId);
-				tagQuestion = tagQuestionRepository.save(tagQuestion);
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 			}
-			
-			tagQuestions.add(tagQuestion);
 		}
-		
-		// Return response with all question IDs for this tag
-		List<String> allQuestionIds = tagQuestionRepository.findByTagId(tagId).stream()
-			.map(TagQuestion::getQuestionId)
-			.collect(Collectors.toList());
-		
-		TagQuestionResponse response = new TagQuestionResponse(
-			tagId,
-			tag.getName(),
-			allQuestionIds
-		);
-		
-		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/{tagName}/questions")
+	public ResponseEntity<?> assignQuestionsToTag(
+			@PathVariable String tagName,
+			@RequestBody List<String> questionIds) {
+		try {
+			TagQuestionResponse response = tagService.assignQuestionsToTag(tagName, questionIds);
+			return ResponseEntity.ok(response);
+		} catch (RuntimeException e) {
+			if (e.getMessage().contains("Tag not found")) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+			} else if (e.getMessage().contains("Question IDs list cannot be empty") || e.getMessage().contains("Invalid question IDs")) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+			} else {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+			}
+		}
 	}
 
 	@GetMapping("/{tagId}/questions")
-	public ResponseEntity<?> getQuestionsByTag(@PathVariable Long tagId) {
-		// Verify tag exists
-		Optional<Tag> tagOpt = tagRepository.findById(tagId);
-		if (tagOpt.isEmpty()) {
-			return ResponseEntity.notFound().build();
+	public ResponseEntity<TagQuestionResponse> getQuestionsByTag(@PathVariable String tagId) {
+		try {
+			TagQuestionResponse response = tagService.getQuestionsByTag(tagId);
+			return ResponseEntity.ok(response);
+		} catch (RuntimeException e) {
+			if (e.getMessage().contains("Tag not found")) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+			} else {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+			}
 		}
-		
-		Tag tag = tagOpt.get();
-		
-		// Get all question IDs for this tag
-		List<String> questionIds = tagQuestionRepository.findByTagId(tagId).stream()
-			.map(TagQuestion::getQuestionId)
-			.collect(Collectors.toList());
-		
-		TagQuestionResponse response = new TagQuestionResponse(
-			tagId,
-			tag.getName(),
-			questionIds
-		);
-		
-		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/sample")
+	public ResponseEntity<List<TagResponse>> getSampleTags(
+			@RequestParam(value = "start", defaultValue = "0") Integer start,
+			@RequestParam(value = "count", defaultValue = "20") Integer count) {
+		try {
+			List<TagResponse> tagResponses = tagService.getSampleTags(start, count);
+			return ResponseEntity.ok(tagResponses);
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
+	}
+
+	@PutMapping("/{tagId}")
+	public ResponseEntity<TagResponse> updateTag(@PathVariable String tagId, @RequestBody TagRequest request) {
+		try {
+			TagResponse response = tagService.updateTag(tagId, request);
+			return ResponseEntity.ok(response);
+		} catch (RuntimeException e) {
+			if (e.getMessage().contains("Tag not found")) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+			} else {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+			}
+		}
+	}
+
+	@DeleteMapping("/{tagId}")
+	public ResponseEntity<Void> deleteTag(@PathVariable String tagId) {
+		try {
+			tagService.deleteTag(tagId);
+			return ResponseEntity.noContent().build();
+		} catch (RuntimeException e) {
+			if (e.getMessage().contains("Tag not found")) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+			} else if (e.getMessage().contains("Tag is associated with questions")) {
+				return ResponseEntity.status(HttpStatus.CONFLICT).build();
+			} else {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+			}
+		}
 	}
 }
 

@@ -10,8 +10,8 @@ import java.util.List;
 public class Tag {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	
+	private String id;
 
 	@Column(nullable = false, unique = true)
 	private String name;
@@ -28,17 +28,18 @@ public class Tag {
 	public Tag() {
 	}
 
-	public Tag(String name, String description) {
+	public Tag(String id, String name, String description) {
+		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.createdAt = LocalDateTime.now();
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
