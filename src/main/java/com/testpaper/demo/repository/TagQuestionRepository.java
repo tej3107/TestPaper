@@ -18,6 +18,9 @@ public interface TagQuestionRepository extends JpaRepository<TagQuestion, Long> 
 	
 	@Query("SELECT tq FROM TagQuestion tq WHERE tq.tagId = :tagId AND tq.questionId = :questionId")
 	Optional<TagQuestion> findByTagIdAndQuestionId(@Param("tagId") String tagId, @Param("questionId") String questionId);
+
+	@Query("SELECT tq.questionId FROM TagQuestion tq WHERE tq.tagId = :tagId")
+	List<String> findQuestionIdByTagId(String tagId);
 	
 	@Modifying
 	@Transactional
