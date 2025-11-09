@@ -19,7 +19,6 @@ import java.util.List;
 public class Tag {
 
 	@Id
-	
 	private String id;
 
 	@Column(nullable = false, unique = true)

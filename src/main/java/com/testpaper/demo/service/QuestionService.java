@@ -46,14 +46,23 @@ public class QuestionService {
 
         List<OptionResponse> optionResponses = this.addOrUpdateOptions(questionId, request.getOptionRequests());
 
-        List<Tag> tagOptional = tagRepository.findByNameIn(request.getTagNames());
+        List<Tag> tagList = tagRepository.findByNameIn(request.getTagNames());
+        if(tagList == null || tagList.isEmpty()) {
+            throw new RuntimeException("No Tags with given names found in system");
+        }
+
+        for (Tag tag : tagList) {
+            if (tagQuestionRepository.findByTagIdAndQuestionId(tag.getId(), questionId).isEmpty()) {
+                tagQuestionRepository.save(new com.testpaper.demo.model.TagQuestion(tag, questionId));
+            }
+        }
 
         return new QuestionResponse(
                 question.getId(),
                 question.getStem(),
                 question.getMultiCorrect(),
                 optionResponses,
-                new ArrayList<>()  // Empty tags list for new question
+                tagList.stream().map(tag -> new TagResponse(tag.getId(), tag.getName(), tag.getDescription())).collect(Collectors.toList())
         );
     }
 

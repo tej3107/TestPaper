@@ -3,12 +3,11 @@ package com.testpaper.demo.resources;
 import com.testpaper.demo.dto.*;
 import com.testpaper.demo.service.QuestionService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
@@ -32,6 +31,24 @@ public class QuestionResource {
 			} else {
 				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new QuestionResponse(null, e.getMessage(), null, null, null));
 			}
+		}
+	}
+
+	@PostMapping("/multiInsert")
+	public ResponseEntity<List<QuestionResponse>> createQuestions(@RequestBody List<QuestionRequest> request) {
+		try {
+			List<QuestionResponse> responses = new ArrayList<>();
+			request.stream().forEach(req -> {
+				try {
+					QuestionResponse response = questionService.createQuestion(req);
+					responses.add(response);
+				} catch (RuntimeException e) {
+					e.printStackTrace();
+				}
+			});
+			return ResponseEntity.status(HttpStatus.CREATED).body(responses);
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
 		}
 	}
 
