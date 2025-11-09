@@ -77,7 +77,7 @@
 <body>
     <div class="container">
         <h2>Add New Tag</h2>
-        <form action="/v1/tags" method="post" th:object="${tagRequest}">
+        <form action="/tags" method="post" th:object="${tagRequest}">
             <div class="form-group">
                 <label for="name">Tag Name:</label>
                 <input type="text" id="name" name="name" required>

@@ -17,7 +17,7 @@ import com.testpaper.demo.service.TagService;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
-@RequestMapping("/tags")
+@RequestMapping("/v1/tags")
 public class TagResource {
 
 	private final TagService tagService;

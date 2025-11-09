@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
-@RequestMapping("/questions")
+@RequestMapping("/v1/questions")
 public class QuestionResource {
 
 	private final QuestionService questionService;

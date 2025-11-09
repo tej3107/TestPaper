@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Question Papers</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .message {
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .question-paper-list {
+            list-style: none;
+            padding: 0;
+        }
+        .question-paper-list li {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .question-paper-list li div {
+            text-align: left;
+        }
+        .question-paper-list li h3 {
+            margin: 0 0 5px 0;
+            color: #007bff;
+        }
+        .question-paper-list li p {
+            margin: 0;
+            color: #555;
+            font-size: 0.9em;
+        }
+        .question-paper-list li a {
+            background-color: #28a745;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+        .question-paper-list li a:hover {
+            background-color: #218838;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .pagination a {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 12px;
+            margin: 0 5px;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+        .pagination a:hover {
+            background-color: #0056b3;
+        }
+        .pagination .disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Available Question Papers</h2>
+
+        <div th:if="${message}" th:classappend="${messageType}" class="message">
+            <p th:text="${message}"></p>
+        </div>
+
+        <ul class="question-paper-list" th:if="${!questionPapers.isEmpty()}">
+            <li th:each="qp : ${questionPapers}">
+                <div>
+                    <h3 th:text="${qp.name}">Paper Name</h3>
+                    <p>ID: <span th:text="${qp.id}"></span></p>
+                    <p>Tag: <span th:text="${qp.tagName ?: 'N/A'}"></span></p>
+                </div>
+                <a th:href="@{/questionpaper-attempt(paperId=${qp.id})}">Attempt</a>
+            </li>
+        </ul>
+        <div th:if="${questionPapers.isEmpty()}">
+            <p>No question papers available.</p>
+        </div>
+
+        <!-- Basic Pagination Controls (Can be enhanced) -->
+        <div class="pagination">
+            <a th:if="${currentPage > 0}" th:href="@{/questionpapers-list(start=${currentPage - 1}, count=${pageSize})}">Previous</a>
+            <span th:text="${currentPage + 1}">1</span>
+            <a th:if="${questionPapers.size() == pageSize}" th:href="@{/questionpapers-list(start=${currentPage + 1}, count=${pageSize})}">Next</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create User</title>
+    <title>Login</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -35,9 +35,7 @@
             margin-bottom: 5px;
             color: #555;
         }
-        .form-group input[type="text"],
-        .form-group input[type="email"],
-        .form-group input[type="date"] {
+        .form-group input[type="text"] {
             width: calc(100% - 20px);
             padding: 10px;
             border: 1px solid #ddd;
@@ -77,26 +75,14 @@
 </head>
 <body>
     <div class="container">
-        <h2>Create New User</h2>
-        <form action="/users" method="post" th:object="${userRequest}">
+        <h2>Login</h2>
+        <form action="/login" method="post">
             <div class="form-group">
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" required>
             </div>
             <div class="form-group">
-                <label for="name">Name:</label>
-                <input type="text" id="name" name="name" required>
-            </div>
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <div class="form-group">
-                <label for="dateOfBirth">Date of Birth:</label>
-                <input type="date" id="dateOfBirth" name="dateOfBirth">
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create User">
+                <input type="submit" value="Login">
             </div>
         </form>
         <div th:if="${message}" th:classappend="${messageType}" class="message">

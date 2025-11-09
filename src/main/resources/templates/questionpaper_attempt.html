@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${questionPaper.name} + ' - Attempt'">Attempt Question Paper</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            box-sizing: border-box; /* Add this */
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        h3 {
+            color: #007bff;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .question {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .question p.stem {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .options-list {
+            list-style: none;
+            padding: 0;
+        }
+        .options-list li {
+            margin-bottom: 8px;
+        }
+        .options-list input[type="radio"],
+        .options-list input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        .navigation-buttons,
+        .question-numbers {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .navigation-buttons button,
+        .question-numbers a,
+        .submit-button button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            text-align: center;
+            flex-grow: 1;
+            margin: 0 5px;
+        }
+        .navigation-buttons button:hover,
+        .question-numbers a:hover,
+        .submit-button button:hover {
+            background-color: #0056b3;
+        }
+        .question-numbers {
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: flex-start;
+        }
+        .question-numbers a {
+            flex-grow: 0;
+            padding: 8px 12px;
+            background-color: #6c757d;
+        }
+        .question-numbers a.active {
+            background-color: #007bff;
+        }
+        .question-numbers a.answered {
+            background-color: #28a745;
+        }
+        .submit-button {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .submit-button button {
+            background-color: #dc3545;
+            max-width: 200px;
+            margin: 0 auto;
+        }
+        .submit-button button:hover {
+            background-color: #c82333;
+        }
+    </style>
+    <script>
+        function navigateQuestion(targetIndex, paperId) {
+            document.getElementById('targetQuestionIndex').value = targetIndex;
+            document.getElementById('questionForm').action = '/save-answer-and-navigate';
+            document.getElementById('questionForm').submit();
+        }
+
+        function navigateQuestionFromData(buttonElement) {
+            const targetIndex = buttonElement.getAttribute('data-target-index');
+            const paperId = buttonElement.getAttribute('data-paper-id');
+            document.getElementById('targetQuestionIndex').value = targetIndex;
+            document.getElementById('questionForm').action = '/save-answer-and-navigate';
+            document.getElementById('questionForm').submit();
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2 th:text="${questionPaper.name}">Question Paper Title</h2>
+
+        <div th:if="${message}" th:classappend="${messageType}" class="message">
+            <p th:text="${message}"></p>
+        </div>
+
+        <form id="questionForm" th:action="@{/save-answer-and-navigate}" method="post">
+            <input type="hidden" name="paperId" th:value="${questionPaper.id}" />
+            <input type="hidden" name="questionId" th:value="${currentQuestion.id}" />
+            <input type="hidden" name="currentQuestionIndex" th:value="${currentQuestionIndex}" />
+            <input type="hidden" id="targetQuestionIndex" name="targetQuestionIndex" value="-1" />
+
+            <div class="question">
+                <p class="stem" th:text="${(currentQuestionIndex + 1) + '. ' + currentQuestion.stem}"></p>
+                <ul class="options-list">
+                    <li th:each="option : ${currentQuestion.options}">
+                        <input
+                            th:id="${'option_' + option.optionId}"
+                            th:name="${currentQuestion.multiCorrect ? 'selectedOptionIds' : 'selectedOptionIds'}"
+                            th:value="${option.optionId}"
+                            th:type="${currentQuestion.multiCorrect ? 'checkbox' : 'radio'}"
+                            th:checked="${userAnswers.containsKey(currentQuestion.id) && userAnswers.get(currentQuestion.id).contains(option.optionId)}"
+                        />
+                        <label th:for="${'option_' + option.optionId}" th:text="${option.optionText}"></label>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="navigation-buttons">
+                <button type="button"
+                        th:disabled="${currentQuestionIndex == 0}"
+                        th:data-target-index="${currentQuestionIndex - 1}"
+                        th:data-paper-id="${questionPaper.id}"
+                        onclick="navigateQuestionFromData(this)">
+                    Previous
+                </button>
+                <button type="button"
+                        th:disabled="${currentQuestionIndex == totalQuestions - 1}"
+                        th:data-target-index="${currentQuestionIndex + 1}"
+                        th:data-paper-id="${questionPaper.id}"
+                        onclick="navigateQuestionFromData(this)">
+                    Next
+                </button>
+            </div>
+        </form>
+
+        <div class="question-numbers">
+            <a th:each="i : ${#numbers.sequence(0, totalQuestions - 1)}"
+               th:attr="onclick=|navigateQuestion(${i}, '${questionPaper.id}')|"
+               th:text="${i + 1}"
+               th:classappend="${currentQuestionIndex == i ? 'active' : ''} + (${userAnswers.containsKey(questionPaper.questions.get(i).id) ? ' answered' : ''})"
+            ></a>
+        </div>
+
+        <div class="submit-button">
+            <form th:action="@{/submit-answers}" method="post">
+                <input type="hidden" name="paperId" th:value="${questionPaper.id}" />
+                <button type="submit">Submit Test</button>
+            </form>
+        </div>
+
+    </div>
+</body>
+</html>

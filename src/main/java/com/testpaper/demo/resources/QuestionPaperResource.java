@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/questionpapers")
+@RequestMapping("/v1/questionpapers")
 public class QuestionPaperResource {
 
     private final QuestionPaperService questionPaperService;

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .user-details {
+            text-align: left;
+            margin-bottom: 30px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .user-details p {
+            margin: 8px 0;
+            color: #555;
+        }
+        .user-details strong {
+            color: #333;
+        }
+        .dashboard-links a {
+            display: block;
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        .dashboard-links a:hover {
+            background-color: #0056b3;
+        }
+        .message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Welcome, <span th:text="${user.name}">User</span>!</h2>
+        <div class="user-details">
+            <p><strong>Username:</strong> <span th:text="${user.username}"></span></p>
+            <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+            <p><strong>Date of Birth:</strong> <span th:text="${user.dateOfBirth}"></span></p>
+        </div>
+
+        <div class="dashboard-links">
+            <a th:href="@{/create-questionpaper}">Create Question Paper</a>
+            <a th:href="@{/add-tag}">Add Tag</a>
+            <a th:href="@{/add-question}">Add Question</a>
+            <a th:href="@{/questionpapers-list}">View Available Question Papers</a>
+        </div>
+
+        <div th:if="${message}" th:classappend="${messageType}" class="message">
+            <p th:text="${message}"></p>
+        </div>
+    </div>
+</body>
+</html>
