@@ -14,11 +14,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 
 @Controller
+@RequestMapping("/v1")
 public class UIController {
 
     private final UserService userService;
@@ -39,7 +41,7 @@ public class UIController {
         return "user_create";
     }
 
-    @PostMapping("/users1")
+    @PostMapping("/users")
     public String createUser(@ModelAttribute UserRequest userRequest, RedirectAttributes redirectAttributes) {
         try {
             userService.createUser(userRequest);
@@ -49,7 +51,7 @@ public class UIController {
             redirectAttributes.addFlashAttribute("message", e.getMessage());
             redirectAttributes.addFlashAttribute("messageType", "error");
         }
-        return "redirect:/create-user";
+        return "redirect:/v1/create-user";
     }
 
     @GetMapping("/add-question")
@@ -62,7 +64,7 @@ public class UIController {
         return "question_add";
     }
 
-    @PostMapping("/questions1")
+    @PostMapping("/questions")
     public String addQuestion(@ModelAttribute QuestionRequest questionRequest, RedirectAttributes redirectAttributes) {
         try {
             questionService.createQuestion(questionRequest);
@@ -72,7 +74,7 @@ public class UIController {
             redirectAttributes.addFlashAttribute("message", e.getMessage());
             redirectAttributes.addFlashAttribute("messageType", "error");
         }
-        return "redirect:/add-question";
+        return "redirect:/v1/add-question";
     }
 
     @GetMapping("/add-tag")
@@ -81,7 +83,7 @@ public class UIController {
         return "tag_add";
     }
 
-    @PostMapping("/tags1")
+    @PostMapping("/tags")
     public String addTag(@ModelAttribute TagRequest tagRequest, RedirectAttributes redirectAttributes) {
         try {
             tagService.createTag(tagRequest);
@@ -91,7 +93,7 @@ public class UIController {
             redirectAttributes.addFlashAttribute("message", e.getMessage());
             redirectAttributes.addFlashAttribute("messageType", "error");
         }
-        return "redirect:/add-tag";
+        return "redirect:/v1/add-tag";
     }
 
     @GetMapping("/create-questionpaper")
@@ -100,7 +102,7 @@ public class UIController {
         return "questionpaper_create";
     }
 
-    @PostMapping("/questionpapers1")
+    @PostMapping("/questionpapers")
     public String createQuestionPaper(@ModelAttribute QuestionPaperRequest questionPaperRequest, RedirectAttributes redirectAttributes) {
         try {
             questionPaperService.createQuestionPaper(questionPaperRequest);
@@ -110,6 +112,6 @@ public class UIController {
             redirectAttributes.addFlashAttribute("message", e.getMessage());
             redirectAttributes.addFlashAttribute("messageType", "error");
         }
-        return "redirect:/create-questionpaper";
+        return "redirect:/v1/create-questionpaper";
     }
 }

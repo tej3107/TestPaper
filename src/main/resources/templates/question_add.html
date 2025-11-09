@@ -113,14 +113,14 @@
 
                 const textInput = document.createElement('input');
                 textInput.type = 'text';
-                textInput.name = `options[${optionIndex}].optionText`;
+                textInput.name = `optionRequests[${optionIndex}].optionText`;
                 textInput.placeholder = `Option ${String.fromCharCode(65 + optionIndex)}`;
                 textInput.value = optionText;
                 textInput.required = true;
 
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
-                checkbox.name = `options[${optionIndex}].isCorrect`;
+                checkbox.name = `optionRequests[${optionIndex}].isCorrect`;
                 checkbox.checked = isCorrect;
 
                 const label = document.createElement('label');
@@ -150,9 +150,9 @@
                 optionGroups.forEach((group) => {
                     const textInput = group.querySelector('input[type="text"]');
                     const checkbox = group.querySelector('input[type="checkbox"]');
-                    textInput.name = `options[${optionIndex}].optionText`;
+                    textInput.name = `optionRequests[${optionIndex}].optionText`;
                     textInput.placeholder = `Option ${String.fromCharCode(65 + optionIndex)}`;
-                    checkbox.name = `options[${optionIndex}].isCorrect`;
+                    checkbox.name = `optionRequests[${optionIndex}].isCorrect`;
                     optionIndex++;
                 });
             }
@@ -172,7 +172,7 @@
 <body>
     <div class="container">
         <h2>Add New Question</h2>
-        <form action="/questions1" method="post" th:object="${questionRequest}">
+        <form action="/v1/questions" method="post" th:object="${questionRequest}">
             <div class="form-group">
                 <label for="stem">Question Stem:</label>
                 <textarea id="stem" name="stem" rows="4" required></textarea>

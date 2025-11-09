@@ -78,7 +78,7 @@
 <body>
     <div class="container">
         <h2>Create New User</h2>
-        <form action="/users1" method="post" th:object="${userRequest}">
+        <form action="/v1/users" method="post" th:object="${userRequest}">
             <div class="form-group">
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" required>
