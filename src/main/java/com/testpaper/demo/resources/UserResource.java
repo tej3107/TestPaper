@@ -26,11 +26,11 @@ public class UserResource {
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (RuntimeException e) {
             if (e.getMessage().contains("cannot be empty")) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new UserResponse(null, e.getMessage(), null, null));
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new UserResponse(null, e.getMessage(), null, null, null));
             } else if (e.getMessage().contains("already exists")) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new UserResponse(null, e.getMessage(), null, null));
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(new UserResponse(null, e.getMessage(), null, null, null));
             } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new UserResponse(null, e.getMessage(), null, null));
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new UserResponse(null, e.getMessage(), null, null, null));
             }
         }
     }

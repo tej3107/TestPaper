@@ -1,15 +1,9 @@
 package com.testpaper.demo.resources;
 
-import com.testpaper.demo.dto.OptionRequest;
-import com.testpaper.demo.dto.QuestionRequest;
-import com.testpaper.demo.dto.TagRequest;
-import com.testpaper.demo.dto.UserRequest;
-import com.testpaper.demo.dto.QuestionPaperRequest;
-import com.testpaper.demo.service.QuestionService;
-import com.testpaper.demo.service.TagService;
-import com.testpaper.demo.service.UserService;
-import com.testpaper.demo.service.QuestionPaperService;
-import com.testpaper.demo.service.TestUserService;
+import com.testpaper.demo.dto.*;
+import com.testpaper.demo.model.TestUserResponse;
+import com.testpaper.demo.service.*;
+import com.testpaper.demo.repository.TestUserResponseRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,14 +14,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.testpaper.demo.dto.UserResponse;
-import com.testpaper.demo.dto.QuestionPaperSummaryResponse;
-import com.testpaper.demo.dto.QuestionPaperResponse;
-import com.testpaper.demo.dto.TestUserAnswerRequest;
-import com.testpaper.demo.dto.QuestionAnswer;
+
 import jakarta.servlet.http.HttpSession;
-import com.testpaper.demo.dto.AttemptProgress;
+
 import java.util.Map;
+//import com.testpaper.demo.dto.TestUserResponse;
 
 @Controller
 public class UIController {
@@ -37,15 +28,19 @@ public class UIController {
     private final TagService tagService;
     private final QuestionPaperService questionPaperService;
     private final TestUserService testUserService;
+    private final TestUserResponseRepository testUserResponseRepository;
+    private final ResultService resultService;
 
     private static final String ATTEMPT_PROGRESS_SESSION_KEY = "attemptProgress";
 
-    public UIController(UserService userService, QuestionService questionService, TagService tagService, QuestionPaperService questionPaperService, TestUserService testUserService) {
+    public UIController(UserService userService, QuestionService questionService, TagService tagService, QuestionPaperService questionPaperService, TestUserService testUserService, ResultService resultService, TestUserResponseRepository testUserResponseRepository) {
         this.userService = userService;
         this.questionService = questionService;
         this.tagService = tagService;
         this.questionPaperService = questionPaperService;
         this.testUserService = testUserService;
+        this.resultService = resultService;
+        this.testUserResponseRepository = testUserResponseRepository;
     }
 
     @GetMapping("/create-user")
@@ -64,7 +59,7 @@ public class UIController {
             redirectAttributes.addFlashAttribute("message", e.getMessage());
             redirectAttributes.addFlashAttribute("messageType", "error");
         }
-        return "redirect:/create-user";
+        return "redirect:/login";
     }
 
     @GetMapping("/add-question")
@@ -160,6 +155,12 @@ public class UIController {
         try {
             UserResponse user = userService.getUserById(loggedInUsername);
             model.addAttribute("user", user);
+            model.addAttribute("accessType", user.getAccessType());
+            
+            // Fetch completed test papers for the user
+            List<TestUserResponse> completedTests = testUserResponseRepository.findByUserId(loggedInUsername);
+            model.addAttribute("completedTests", completedTests);
+
             return "user_dashboard";
         } catch (RuntimeException e) {
             model.addAttribute("message", "Error retrieving user details: " + e.getMessage());
@@ -246,6 +247,7 @@ public class UIController {
                              @RequestParam(value = "selectedOptionIds", required = false) List<String> selectedOptionIds,
                              @RequestParam("currentQuestionIndex") int currentQuestionIndex,
                              @RequestParam("targetQuestionIndex") int targetQuestionIndex,
+                             @RequestParam("finalSubmit") String finalSubmit,
                              RedirectAttributes redirectAttributes,
                              HttpSession session) {
 
@@ -272,12 +274,18 @@ public class UIController {
             attemptProgress.getUserAnswers().remove(questionId);
         }
 
+        if(finalSubmit!=null && finalSubmit.equals("true") ){
+            // Redirect to submission if final submit is requested
+            return "redirect:/submit-answers?paperId=" + paperId;
+        }
+
         // Redirect to the target question index
         return "redirect:/questionpaper-attempt?paperId=" + paperId + "&questionIndex=" + targetQuestionIndex;
     }
 
-    @PostMapping("/submit-answers")
-    public String submitAnswers(@RequestParam("paperId") String paperId, RedirectAttributes redirectAttributes, HttpSession session) {
+    @GetMapping("/submit-answers")
+    public String submitAnswers(@RequestParam("paperId") String paperId,
+                                RedirectAttributes redirectAttributes, HttpSession session) {
         String loggedInUsername = (String) session.getAttribute("loggedInUsername");
         if (loggedInUsername == null || loggedInUsername.isEmpty()) {
             redirectAttributes.addFlashAttribute("message", "Session expired. Please log in again.");
@@ -311,11 +319,35 @@ public class UIController {
             session.removeAttribute(ATTEMPT_PROGRESS_SESSION_KEY); // Clear session after submission
             redirectAttributes.addFlashAttribute("message", "Answers submitted successfully!");
             redirectAttributes.addFlashAttribute("messageType", "success");
-            return "redirect:/user-dashboard";
+            return "redirect:/user-test-result?userId=" + loggedInUsername + "&paperId=" + paperId;
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("message", "Error submitting answers: " + e.getMessage());
             redirectAttributes.addFlashAttribute("messageType", "error");
             return "redirect:/questionpaper-attempt?paperId=" + paperId + "&questionIndex=" + attemptProgress.getCurrentQuestionIndex();
+        }
+    }
+
+    @GetMapping("/user-test-result")
+    public String getUserTestResult(@RequestParam("userId") String userId,
+                                    @RequestParam("paperId") String paperId,
+                                    Model model,
+                                    RedirectAttributes redirectAttributes,
+                                    HttpSession session) {
+        String loggedInUsername = (String) session.getAttribute("loggedInUsername");
+        if (loggedInUsername == null || loggedInUsername.isEmpty() || !loggedInUsername.equals(userId)) {
+            redirectAttributes.addFlashAttribute("message", "Unauthorized access or session expired.");
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/login";
+        }
+
+        try {
+            TestResultResponse testResult = resultService.getTestResults(userId, paperId);
+            model.addAttribute("testResult", testResult);
+            return "test_result";
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("message", "Error retrieving test results: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("messageType", "error");
+            return "redirect:/user-dashboard"; // Or a more appropriate error page
         }
     }
 

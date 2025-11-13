@@ -37,7 +37,8 @@
         }
         .form-group input[type="text"],
         .form-group input[type="email"],
-        .form-group input[type="date"] {
+        .form-group input[type="date"],
+        .form-group select {
             width: calc(100% - 20px);
             padding: 10px;
             border: 1px solid #ddd;
@@ -94,6 +95,14 @@
             <div class="form-group">
                 <label for="dateOfBirth">Date of Birth:</label>
                 <input type="date" id="dateOfBirth" name="dateOfBirth">
+            </div>
+            <div class="form-group">
+                <label for="accesstype">Access Type:</label>
+                <select id="accesstype" name="accesstype" th:field="*{accesstype}">
+                    <option value="Student">Student</option>
+                    <option value="User">User</option>
+                    <option value="Admin">Admin</option>
+                </select>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create User">

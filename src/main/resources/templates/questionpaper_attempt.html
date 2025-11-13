@@ -126,6 +126,12 @@
             document.getElementById('questionForm').action = '/save-answer-and-navigate';
             document.getElementById('questionForm').submit();
         }
+
+        function finalSubmit(buttonElement) {
+            document.getElementById('finalSubmit').value = 'true';
+            document.getElementById('questionForm').action = '/save-answer-and-navigate';
+            document.getElementById('questionForm').submit();
+        }
     </script>
 </head>
 <body>
@@ -141,6 +147,8 @@
             <input type="hidden" name="questionId" th:value="${currentQuestion.id}" />
             <input type="hidden" name="currentQuestionIndex" th:value="${currentQuestionIndex}" />
             <input type="hidden" id="targetQuestionIndex" name="targetQuestionIndex" value="-1" />
+            <input type="hidden" id="finalSubmit" name="finalSubmit" value="false" />
+
 
             <div class="question">
                 <p class="stem" th:text="${(currentQuestionIndex + 1) + '. ' + currentQuestion.stem}"></p>
@@ -185,10 +193,9 @@
         </div>
 
         <div class="submit-button">
-            <form th:action="@{/submit-answers}" method="post">
-                <input type="hidden" name="paperId" th:value="${questionPaper.id}" />
-                <button type="submit">Submit Test</button>
-            </form>
+            <button th:attr="onclick=|finalSubmit()|">
+            Submit
+            </button>
         </div>
 
     </div>

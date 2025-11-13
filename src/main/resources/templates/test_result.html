@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Results - <span th:text="${testResult.questionPaperName}"></span></title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 900px;
+            box-sizing: border-box;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .summary {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .summary p {
+            margin: 5px 0;
+            font-size: 1.1em;
+        }
+        .summary .correct {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .summary .wrong {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .summary .unattempted {
+            color: #ffc107;
+            font-weight: bold;
+        }
+        .question-result {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .question-result p.stem {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+        .options-list li {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        .option-text {
+            margin-left: 5px;
+        }
+        .correct-option {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .user-selected-correct {
+            background-color: #cce5ff;
+            color: #004085;
+            border: 1px solid #b8daff;
+        }
+        .user-selected-wrong {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .not-attempted {
+            color: #6c757d;
+            font-style: italic;
+        }
+        .message {
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .back-to-dashboard {
+            display: block;
+            width: 200px;
+            margin: 30px auto 0;
+            padding: 10px 15px;
+            background-color: #6c757d;
+            color: white;
+            text-align: center;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .back-to-dashboard:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 th:text="${testResult.questionPaperName} + ' - Results'">Test Results</h2>
+
+        <div th:if="${message}" th:classappend="${messageType}" class="message">
+            <p th:text="${message}"></p>
+        </div>
+
+        <div class="summary">
+            <p>Total Questions: <span th:text="${testResult.totalQuestions}"></span></p>
+            <p class="correct">Correct Answers: <span th:text="${testResult.correctAnswers}"></span></p>
+            <p class="wrong">Wrong Answers: <span th:text="${testResult.wrongAnswers}"></span></p>
+            <p class="unattempted">Unattempted: <span th:text="${testResult.unattemptedQuestions}"></span></p>
+        </div>
+
+        <div th:each="qr, qrStat : ${testResult.questionResults}" class="question-result">
+            <p class="stem" th:text="${(qrStat.index + 1) + '. ' + qr.questionStem}"></p>
+            <p th:if="${!qr.attempted}" class="not-attempted">Not Attempted</p>
+
+            <ul class="options-list">
+                <li th:each="option : ${qr.allOptions}"
+                    th:classappend="${qr.correctOptionIds.contains(option.optionId) ? (
+                                      qr.selectedOptionIds.contains(option.optionId) ? 'user-selected-correct' : 'correct-option'
+                                    ) : (
+                                      qr.selectedOptionIds.contains(option.optionId) ? 'user-selected-wrong' : ''
+                                    )}">
+                    <span th:text="${option.optionText}" class="option-text"></span>
+                    <span th:if="${qr.correctOptionIds.contains(option.optionId) and !qr.selectedOptionIds.contains(option.optionId)}" style="color: #28a745;">(Correct)</span>
+                    <span th:if="${qr.selectedOptionIds.contains(option.optionId) and !qr.correctOptionIds.contains(option.optionId)}" style="color: #dc3545;">(Your Answer - Incorrect)</span>
+                    <span th:if="${qr.selectedOptionIds.contains(option.optionId) and qr.correctOptionIds.contains(option.optionId)}" style="color: #007bff;">(Your Answer - Correct)</span>
+                </li>
+            </ul>
+        </div>
+
+        <a th:href="@{/user-dashboard}" class="back-to-dashboard">Back to Dashboard</a>
+
+    </div>
+</body>
+</html>

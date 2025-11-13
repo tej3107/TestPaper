@@ -66,6 +66,24 @@
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
+        .completed-tests-list {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .test-result-link {
+            display: block;
+            background-color: #e0e0e0;
+            color: #333;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+        .test-result-link:hover {
+            background-color: #d0d0d0;
+        }
     </style>
 </head>
 <body>
@@ -75,13 +93,22 @@
             <p><strong>Username:</strong> <span th:text="${user.username}"></span></p>
             <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
             <p><strong>Date of Birth:</strong> <span th:text="${user.dateOfBirth}"></span></p>
+            <p><strong>Access Type:</strong> <span th:text="${user.accessType}"></span></p>
         </div>
 
         <div class="dashboard-links">
-            <a th:href="@{/create-questionpaper}">Create Question Paper</a>
-            <a th:href="@{/add-tag}">Add Tag</a>
-            <a th:href="@{/add-question}">Add Question</a>
+            <a th:if="${accessType == 'Admin' or accessType == 'User'}" th:href="@{/create-questionpaper}">Create Question Paper</a>
+            <a th:if="${accessType == 'Admin'}" th:href="@{/add-tag}">Add Tag</a>
+            <a th:if="${accessType == 'Admin'}" th:href="@{/add-question}">Add Question</a>
             <a th:href="@{/questionpapers-list}">View Available Question Papers</a>
+        </div>
+
+        <h3 th:if="${!completedTests.empty}" style="margin-top: 30px; color: #333;">Completed Tests:</h3>
+        <div class="completed-tests-list">
+            <a th:each="test : ${completedTests}"
+               th:href="@{/user-test-result(userId=${user.username}, paperId=${test.id.questionPaperId})}"
+               th:text="${'Result for ' + test.id.questionPaperId}" class="test-result-link">
+            </a>
         </div>
 
         <div th:if="${message}" th:classappend="${messageType}" class="message">
