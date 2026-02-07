@@ -36,6 +36,9 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(nullable = false)
+    private String accesstype = "Student"; // Default value
+
     public User(String username, String name, String email, LocalDate dateOfBirth) {
         this.username = username;
         this.name = name;

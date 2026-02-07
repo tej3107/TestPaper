@@ -39,8 +39,13 @@ public class UserService {
         }
 
         User user = new User(request.getUsername(), request.getName(), request.getEmail(), request.getDateOfBirth());
+        if (request.getAccesstype() != null && !request.getAccesstype().trim().isEmpty()) {
+            user.setAccesstype(request.getAccesstype());
+        } else {
+            user.setAccesstype("Student"); // Default value
+        }
         user = userRepository.save(user);
-        return new UserResponse(user.getName(), user.getUsername(), user.getEmail(), user.getDateOfBirth());
+        return new UserResponse(user.getName(), user.getUsername(), user.getEmail(), user.getDateOfBirth(), user.getAccesstype());
     }
 
     public UserResponse getUserById(String username) {
@@ -49,7 +54,7 @@ public class UserService {
             throw new RuntimeException("User not found");
         }
         User user = userOptional.get();
-        return new UserResponse(user.getName(), user.getUsername(), user.getEmail(), user.getDateOfBirth());
+        return new UserResponse(user.getName(), user.getUsername(), user.getEmail(), user.getDateOfBirth(), user.getAccesstype());
     }
 
     public List<UserResponse> getAllUsers(Integer start, Integer count) {
@@ -62,7 +67,7 @@ public class UserService {
             users = userRepository.findAll(pageable).getContent();
         }
         return users.stream()
-                .map(user -> new UserResponse(user.getName(), user.getUsername(), user.getEmail(), user.getDateOfBirth()))
+                .map(user -> new UserResponse(user.getName(), user.getUsername(), user.getEmail(), user.getDateOfBirth(), user.getAccesstype()))
                 .collect(Collectors.toList());
     }
 
@@ -88,9 +93,13 @@ public class UserService {
             user.setDateOfBirth(request.getDateOfBirth());
         }
 
+        if (request.getAccesstype() != null && !request.getAccesstype().trim().isEmpty() && !request.getAccesstype().equals(user.getAccesstype())) {
+            user.setAccesstype(request.getAccesstype());
+        }
+
         user.setUpdatedAt(LocalDateTime.now());
         user = userRepository.save(user);
-        return new UserResponse(user.getName(), user.getUsername(), user.getEmail(), user.getDateOfBirth());
+        return new UserResponse(user.getName(), user.getUsername(), user.getEmail(), user.getDateOfBirth(), user.getAccesstype());
     }
 
     public void deleteUser(String username) {

@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/testuser")
+@RequestMapping("/v1/testuser")
 public class TestUserResource {
 
     private final TestUserService testUserService;

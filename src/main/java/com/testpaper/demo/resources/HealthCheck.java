@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/healthcheck")
+@RequestMapping("/v1/healthcheck")
 public class HealthCheck {
 	// Remove this class
 
