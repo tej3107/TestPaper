@@ -21,6 +21,8 @@ public class Person {
 		this.name = name;
 	}
 
+	public void abc(){};
+
 	public Long getId() {
 		return id;
 	}
