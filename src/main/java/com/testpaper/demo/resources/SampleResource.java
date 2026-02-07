@@ -5,13 +5,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/healthcheck")
-public class HealthCheck {
+@RequestMapping("/api")
+public class SampleResource {
 	// Remove this class
 
-	@GetMapping
+	@GetMapping("/sample")
 	public String getSample() {
-		return "Healthcheck OK";
+		return "Sample text";
 	}
 }
 
