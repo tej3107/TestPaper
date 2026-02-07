@@ -1,44 +1,21 @@
 package com.testpaper.demo.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.List;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class TagQuestionResponse {
 	
-	private Long tagId;
+	private String tagId;
 	private String tagName;
 	private List<String> questionIds;
-	
-	public TagQuestionResponse() {
-	}
-	
-	public TagQuestionResponse(Long tagId, String tagName, List<String> questionIds) {
-		this.tagId = tagId;
-		this.tagName = tagName;
-		this.questionIds = questionIds;
-	}
-	
-	public Long getTagId() {
-		return tagId;
-	}
-	
-	public void setTagId(Long tagId) {
-		this.tagId = tagId;
-	}
-	
-	public String getTagName() {
-		return tagName;
-	}
-	
-	public void setTagName(String tagName) {
-		this.tagName = tagName;
-	}
-	
-	public List<String> getQuestionIds() {
-		return questionIds;
-	}
-	
-	public void setQuestionIds(List<String> questionIds) {
-		this.questionIds = questionIds;
-	}
+
 }
 

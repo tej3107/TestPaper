@@ -1,32 +1,22 @@
 package com.testpaper.demo.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.List;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class QuestionRequest {
 	
 	private String stem;
 	private Boolean multiCorrect;
-	
-	public QuestionRequest() {
-	}
-	
-	public QuestionRequest(String stem, Boolean multiCorrect) {
-		this.stem = stem;
-		this.multiCorrect = multiCorrect;
-	}
-	
-	public String getStem() {
-		return stem;
-	}
-	
-	public void setStem(String stem) {
-		this.stem = stem;
-	}
-	
-	public Boolean getMultiCorrect() {
-		return multiCorrect;
-	}
-	
-	public void setMultiCorrect(Boolean multiCorrect) {
-		this.multiCorrect = multiCorrect;
-	}
+	private List<OptionRequest> optionRequests;
+	private List<String> tagNames;
+
 }
 

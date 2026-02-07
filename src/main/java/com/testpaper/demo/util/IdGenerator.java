@@ -7,7 +7,7 @@ import java.util.Random;
 
 public class IdGenerator {
 	
-	private static final String ALPHANUMERIC = "abcdef0123456789";
+	private static final String ALPHANUMERIC = "abcdefghijklmnopqrstuvwxyz0123456789";
 	private static final Random random = new Random();
 	
 	public static String generateRandomId(int length) {

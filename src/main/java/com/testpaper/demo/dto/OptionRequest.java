@@ -1,42 +1,19 @@
 package com.testpaper.demo.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class OptionRequest {
 	
 	private String optionId;
 	private String optionText;
 	private Boolean isCorrect;
-	
-	public OptionRequest() {
-	}
-	
-	public OptionRequest(String optionId, String optionText, Boolean isCorrect) {
-		this.optionId = optionId;
-		this.optionText = optionText;
-		this.isCorrect = isCorrect;
-	}
-	
-	public String getOptionId() {
-		return optionId;
-	}
-	
-	public void setOptionId(String optionId) {
-		this.optionId = optionId;
-	}
-	
-	public String getOptionText() {
-		return optionText;
-	}
-	
-	public void setOptionText(String optionText) {
-		this.optionText = optionText;
-	}
-	
-	public Boolean getIsCorrect() {
-		return isCorrect;
-	}
-	
-	public void setIsCorrect(Boolean isCorrect) {
-		this.isCorrect = isCorrect;
-	}
+
 }
 
