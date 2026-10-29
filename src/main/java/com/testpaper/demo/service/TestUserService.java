@@ -79,7 +79,7 @@ public class TestUserService {
                 throw new RuntimeException(String.format("Selected options for question '%s' cannot be empty", answer.getQuestionId()));
             }
 
-            if (!question.getMultiCorrect() && answer.getSelectedOptionIds().size() > 1) {
+            if (!Boolean.TRUE.equals(question.getMultiCorrect()) && answer.getSelectedOptionIds().size() > 1) {
                 throw new RuntimeException(String.format("Question '%s' is single correct, but multiple options were selected", answer.getQuestionId()));
             }
 

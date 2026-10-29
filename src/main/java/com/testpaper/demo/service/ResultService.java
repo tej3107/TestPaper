@@ -54,7 +54,7 @@ public class ResultService {
         for (QuestionPaperQuestionResponse question : questionPaper.getQuestions()) {
             Question ques = questionRepository.findById(question.getId()).get();
             List<String> correctOptionIds = ques.getOptions().stream()
-                    .filter(Option::getIsCorrect)
+                    .filter(opt -> Boolean.TRUE.equals(opt.getIsCorrect()))
                     .map(Option::getOptionId)
                     .collect(Collectors.toList());
 

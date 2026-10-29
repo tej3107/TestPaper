@@ -39,6 +39,9 @@ public class User {
     @Column(nullable = false)
     private String accesstype = "Student"; // Default value
 
+    @Column(nullable = false)
+    private String password = "password"; // Default value
+
     public User(String username, String name, String email, LocalDate dateOfBirth) {
         this.username = username;
         this.name = name;

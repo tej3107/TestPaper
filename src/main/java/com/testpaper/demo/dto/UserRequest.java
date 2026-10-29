@@ -17,4 +17,5 @@ public class UserRequest {
     private String email;
     private LocalDate dateOfBirth;
     private String accesstype;
+    private String password;
 }

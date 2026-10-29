@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -12,7 +14,8 @@ import lombok.Setter;
 public class QuestionPaperRequest {
 
     private String name;
-    private String tagName;
+    private String tagName; // single tag, kept for backward compatibility
+    private List<String> tagNames;
     private Integer questionCount;
 
 }

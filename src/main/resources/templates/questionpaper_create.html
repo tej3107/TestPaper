@@ -36,7 +36,8 @@
             color: #555;
         }
         .form-group input[type="text"],
-        .form-group input[type="number"] {
+        .form-group input[type="number"],
+        .form-group select {
             width: calc(100% - 20px);
             padding: 10px;
             border: 1px solid #ddd;
@@ -83,8 +84,11 @@
                 <input type="text" id="name" name="name" required>
             </div>
             <div class="form-group">
-                <label for="tagName">Tag Name:</label>
-                <input type="text" id="tagName" name="tagName" required>
+                <label for="tagNames">Tags (hold Ctrl/Cmd to select multiple):</label>
+                <select id="tagNames" name="tagNames" multiple required>
+                    <option th:each="tag : ${tags}" th:value="${tag.name}" th:text="${tag.name}"></option>
+                </select>
+                <p th:if="${#lists.isEmpty(tags)}">No tags yet. <a href="/add-tag">Create a tag</a> first.</p>
             </div>
             <div class="form-group">
                 <label for="questionCount">Number of Questions:</label>

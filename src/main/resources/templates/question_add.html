@@ -182,6 +182,13 @@
                 <label for="multiCorrect">Multi-Correct Question</label>
             </div>
             <div class="form-group">
+                <label for="tagNames">Tags (hold Ctrl/Cmd to select multiple):</label>
+                <select id="tagNames" name="tagNames" multiple required>
+                    <option th:each="tag : ${tags}" th:value="${tag.name}" th:text="${tag.name}"></option>
+                </select>
+                <p th:if="${#lists.isEmpty(tags)}">No tags yet. <a href="/add-tag">Create a tag</a> first.</p>
+            </div>
+            <div class="form-group">
                 <label>Options:</label>
                 <div id="options-container">
                     <!-- Options will be added here by JavaScript -->

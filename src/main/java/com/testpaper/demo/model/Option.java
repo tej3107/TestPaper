@@ -38,7 +38,7 @@ public class Option {
 
 	public Option(String optionText, Boolean isCorrect) {
 		this.optionText = optionText;
-		this.isCorrect = isCorrect;
+		this.isCorrect = Boolean.TRUE.equals(isCorrect);
 	}
 }
 

@@ -44,8 +44,18 @@ public class UserService {
         } else {
             user.setAccesstype("Student"); // Default value
         }
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+            user.setPassword(request.getPassword());
+        } // else keeps the default password
         user = userRepository.save(user);
         return new UserResponse(user.getName(), user.getUsername(), user.getEmail(), user.getDateOfBirth(), user.getAccesstype());
+    }
+
+    public void authenticate(String username, String password) {
+        Optional<User> userOptional = userRepository.findById(username);
+        if (userOptional.isEmpty() || password == null || !password.equals(userOptional.get().getPassword())) {
+            throw new RuntimeException("Invalid username or password");
+        }
     }
 
     public UserResponse getUserById(String username) {
@@ -95,6 +105,10 @@ public class UserService {
 
         if (request.getAccesstype() != null && !request.getAccesstype().trim().isEmpty() && !request.getAccesstype().equals(user.getAccesstype())) {
             user.setAccesstype(request.getAccesstype());
+        }
+
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+            user.setPassword(request.getPassword());
         }
 
         user.setUpdatedAt(LocalDateTime.now());

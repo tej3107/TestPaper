@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,28 +49,39 @@ public class QuestionPaperService {
         if (request.getName() == null || request.getName().trim().isEmpty()) {
             throw new RuntimeException("Question paper name cannot be empty");
         }
-        if (request.getTagName() == null || request.getTagName().trim().isEmpty()) {
+        List<String> tagNames = request.getTagNames() != null && !request.getTagNames().isEmpty()
+                ? request.getTagNames()
+                : (request.getTagName() == null || request.getTagName().trim().isEmpty() ? List.<String>of() : List.of(request.getTagName()));
+        if (tagNames.isEmpty()) {
             throw new RuntimeException("Tag name cannot be empty");
         }
         if (request.getQuestionCount() == null || request.getQuestionCount() <= 0) {
             throw new RuntimeException("Question count must be a positive number");
         }
 
-        Optional<Tag> tagOpt = tagRepository.findByName(request.getTagName());
-        if (tagOpt.isEmpty()) {
-            throw new RuntimeException(String.format("Tag '%s' not found", request.getTagName()));
+        List<Tag> tags = tagRepository.findByNameIn(tagNames);
+        List<String> missingTags = tagNames.stream()
+                .filter(n -> tags.stream().noneMatch(t -> t.getName().equals(n)))
+                .collect(Collectors.toList());
+        if (!missingTags.isEmpty()) {
+            throw new RuntimeException(String.format("Tag(s) '%s' not found", String.join("', '", missingTags)));
         }
-        String tagId = tagOpt.get().getId();
 
-        List<String> availableQuestionIds = tagQuestionRepository.findQuestionIdByTagId(tagId);
+        // Union of questions across all selected tags, without duplicates
+        Set<String> questionIdSet = new LinkedHashSet<>();
+        for (Tag tag : tags) {
+            questionIdSet.addAll(tagQuestionRepository.findQuestionIdByTagId(tag.getId()));
+        }
+        List<String> availableQuestionIds = new ArrayList<>(questionIdSet);
+        String tagLabel = String.join(", ", tagNames);
 
         if (availableQuestionIds.isEmpty()) {
-            throw new RuntimeException(String.format("No questions found for tag '%s'", request.getTagName()));
+            throw new RuntimeException(String.format("No questions found for tag(s) '%s'", tagLabel));
         }
 
         if (request.getQuestionCount() > availableQuestionIds.size()) {
-            throw new RuntimeException(String.format("Requested question count (%d) exceeds available questions (%d) for tag '%s'",
-                    request.getQuestionCount(), availableQuestionIds.size(), request.getTagName()));
+            throw new RuntimeException(String.format("Requested question count (%d) exceeds available questions (%d) for tag(s) '%s'",
+                    request.getQuestionCount(), availableQuestionIds.size(), tagLabel));
         }
 
         Collections.shuffle(availableQuestionIds);

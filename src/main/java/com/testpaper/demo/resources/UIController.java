@@ -18,7 +18,6 @@ import java.util.Map;
 //import com.testpaper.demo.dto.TestUserResponse;
 
 @Controller
-@Deprecated
 /**
  * Please done use this repo
  * */
@@ -70,6 +69,7 @@ public class UIController {
         questionRequest.getOptionRequests().add(new OptionRequest());
         questionRequest.getOptionRequests().add(new OptionRequest());
         model.addAttribute("questionRequest", questionRequest);
+        model.addAttribute("tags", tagService.getAllTags());
         return "question_add";
     }
 
@@ -108,6 +108,7 @@ public class UIController {
     @GetMapping("/create-questionpaper")
     public String createQuestionPaperForm(Model model) {
         model.addAttribute("questionPaperRequest", new QuestionPaperRequest());
+        model.addAttribute("tags", tagService.getAllTags());
         return "questionpaper_create";
     }
 
@@ -130,16 +131,11 @@ public class UIController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam String username, RedirectAttributes redirectAttributes, HttpSession session) {
+    public String login(@RequestParam String username, @RequestParam String password, RedirectAttributes redirectAttributes, HttpSession session) {
         try {
-            if (userService.getUserById(username) != null) {
-                session.setAttribute("loggedInUsername", username);
-                return "redirect:/user-dashboard";
-            } else {
-                redirectAttributes.addFlashAttribute("message", "User not found. Please create an account.");
-                redirectAttributes.addFlashAttribute("messageType", "error");
-                return "redirect:/login";
-            }
+            userService.authenticate(username, password);
+            session.setAttribute("loggedInUsername", username);
+            return "redirect:/user-dashboard";
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("message", e.getMessage());
             redirectAttributes.addFlashAttribute("messageType", "error");

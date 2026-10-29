@@ -1,5 +1,6 @@
 package com.testpaper.demo.service;
 
+import org.springframework.transaction.annotation.Transactional;
 import com.testpaper.demo.dto.QuestionRequest;
 import com.testpaper.demo.dto.QuestionResponse;
 import com.testpaper.demo.dto.OptionRequest;
@@ -36,7 +37,15 @@ public class QuestionService {
         this.tagRepository = tagRepository;
     }
 
+    @Transactional
     public QuestionResponse createQuestion(QuestionRequest request) {
+        // Validate tags first so a failure doesn't leave a saved question behind
+        List<Tag> tagList = request.getTagNames() == null || request.getTagNames().isEmpty()
+                ? List.of() : tagRepository.findByNameIn(request.getTagNames());
+        if (tagList.isEmpty()) {
+            throw new RuntimeException("No Tags with given names found in system");
+        }
+
         String questionId = IdGenerator.generateHashBasedId(request.getStem());
         if (questionRepository.existsById(questionId)) {
             throw new RuntimeException(String.format("Question Already Exist with Id: %s!!", questionId));
@@ -45,11 +54,6 @@ public class QuestionService {
         question = questionRepository.save(question);
 
         List<OptionResponse> optionResponses = this.addOrUpdateOptions(questionId, request.getOptionRequests());
-
-        List<Tag> tagList = tagRepository.findByNameIn(request.getTagNames());
-        if(tagList == null || tagList.isEmpty()) {
-            throw new RuntimeException("No Tags with given names found in system");
-        }
 
         for (Tag tag : tagList) {
             if (tagQuestionRepository.findByTagIdAndQuestionId(tag.getId(), questionId).isEmpty()) {
@@ -121,7 +125,7 @@ public class QuestionService {
                 }
             }
             option.setOptionText(optionRequest.getOptionText());
-            option.setIsCorrect(optionRequest.getIsCorrect());
+            option.setIsCorrect(Boolean.TRUE.equals(optionRequest.getIsCorrect()));
             optionsToUpdate.add(option);
         }
 

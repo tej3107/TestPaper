@@ -36,7 +36,7 @@ public class Question {
 	public Question(String id, String stem, Boolean multiCorrect) {
 		this.id = id;
 		this.stem = stem;
-		this.multiCorrect = multiCorrect;
+		this.multiCorrect = Boolean.TRUE.equals(multiCorrect);
 		this.createdAt = LocalDateTime.now();
 	}
 
